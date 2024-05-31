@@ -2,6 +2,20 @@
 
 This tool is used to benchmark different data structures for the course "VU-Performance Oriented Computing SS24" at UIBK.
 
+## Installing
+To install I highly recommend you to add this project as a submodule to your own repository
+
+```bash
+cd perf-oriented-dev
+git submodule add git@github.com:tobiasbeiser/uibk-poc-datastructure-benchmark.git tools/DataStructureBenchmark
+git submodule init
+git submodule update
+git add .gitmodules tools/DataStructureBenchmark/
+git commit -m "Added submodule for DataStructure Benchmark"
+git push
+```
+
+
 ## Building
 ```bash
 mkdir build && cd build
