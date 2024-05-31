@@ -1,6 +1,5 @@
 #include "ArrayBenchmark.hpp"
-#include <vector>
-#include <memory>
+//#include <memory>
 
 template void ArrayBenchmark<Element8Bytes>::runBenchmark();
 template void ArrayBenchmark<Element512Bytes>::runBenchmark();
@@ -11,10 +10,13 @@ void ArrayBenchmark<T>::runBenchmark()
 {
 	this->resetCounters();
 	std::vector<T> collection(this->collectionSize);
-    
-	
+	collection.reserve(this->collectionSize + 1);
+
+
 	auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
+	const auto start = std::chrono::high_resolution_clock::now();
 	bool run = true;
+	std::cout << "Running benchmark with " << this->collectionSize << " elements" << std::endl;
 	while (run)
 	{
 		for (int i = 0; i < this->collectionSize;)
@@ -25,7 +27,7 @@ void ArrayBenchmark<T>::runBenchmark()
 				break;
 			}
 
-			for (int k = 0; k < this->getPadding1() && i < this->collectionSize; k+=2)
+			for (int k = 0; k < this->getPadding1() && i < this->collectionSize; k += 2)
 			{
 				// read
 				char data = collection.at(i).data[0];
@@ -34,45 +36,47 @@ void ArrayBenchmark<T>::runBenchmark()
 				this->readWriteOperations++;
 
 				// write
-				collection[i].data[0] = 0;
+				collection.at(i).data[0] = 0;
 				i++;
 				this->readWriteOperations++;
 			}
 
-			
-			
+
+
 			if (this->insertPercentage > 0 && i < this->collectionSize)
 			{
 				// insert
-				T newElement = T();
-				collection.push_back(newElement);
+				collection.emplace_back();
 				this->insertDeleteOperations++;
 				i++;
 			}
 
-			for (int k = 0; k < this->getPadding2() && i < this->collectionSize; k+=2)
+			for (int k = 0; k < this->getPadding2() && i < this->collectionSize; k += 2)
 			{
 				// read
-				char data = collection[i].data[0];
+				char data = collection.at(i).data[0];
 				data++;
 				i++;
 				this->readWriteOperations++;
 
 				// write
-				collection[i].data[0] = 0;
+				collection.at(i).data[0] = 0;
 				i++;
 				this->readWriteOperations++;
 			}
 
 
-			// delete
+
 			if (this->insertPercentage > 0 && i < this->collectionSize)
 			{
+				// delete
 				collection.pop_back();
 				i++;
 				this->insertDeleteOperations++;
 			}
+
 		}
 	}
-	this->printResults();
+	const auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start).count();
+	this->printResults(duration);
 }

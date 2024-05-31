@@ -11,9 +11,11 @@ void ListBenchmark<T>::runBenchmark()
 {
 	this->resetCounters();
 	std::forward_list<T> collection(this->collectionSize);
-	auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
-	bool run = true;
 
+	const auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
+	const auto start = std::chrono::high_resolution_clock::now();
+
+	bool run = true;
 	while (run)
 	{
 		for (typename std::forward_list<T>::iterator it = collection.begin(); it != collection.end();)
@@ -24,7 +26,7 @@ void ListBenchmark<T>::runBenchmark()
 				break;
 			}
 
-			for (int k = 0; k < this->getPadding1() && it != collection.end(); k+=2)
+			for (int k = 0; k < this->getPadding1() && it != collection.end(); k += 2)
 			{
 				// read
 				char data = (*it).data[0];
@@ -35,7 +37,7 @@ void ListBenchmark<T>::runBenchmark()
 				{
 					break;
 				}
-				
+
 				// write
 				(*it).data[0] = 0;
 				this->readWriteOperations++;
@@ -45,8 +47,8 @@ void ListBenchmark<T>::runBenchmark()
 
 			if (this->insertPercentage > 0)
 			{
-				T newElement = T();
-				collection.push_front(newElement);
+				// insert
+				collection.emplace_front();
 				this->insertDeleteOperations++;
 				if (it != collection.end())
 				{
@@ -54,7 +56,7 @@ void ListBenchmark<T>::runBenchmark()
 				}
 			}
 
-			for (int k = 0; k < this->getPadding2() && it != collection.end(); k+=2)
+			for (int k = 0; k < this->getPadding2() && it != collection.end(); k += 2)
 			{
 				// read
 				char data = (*it).data[0];
@@ -66,7 +68,7 @@ void ListBenchmark<T>::runBenchmark()
 				{
 					break;
 				}
-				
+
 				// write
 				(*it).data[0] = 0;
 				this->readWriteOperations++;
@@ -85,5 +87,6 @@ void ListBenchmark<T>::runBenchmark()
 			}
 		}
 	}
-	this->printResults();
+	const auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start).count();
+	this->printResults(duration);
 }

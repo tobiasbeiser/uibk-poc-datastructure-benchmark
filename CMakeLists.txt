@@ -12,7 +12,7 @@ endif()
 project ("DataStructureBenchmark")
 
 # Add source to this project's executable.
-add_executable (DataStructureBenchmark "DataStructureBenchmark.cpp" "DataStructureBenchmark.hpp" "BenchmarkBase.cpp" "BenchmarkBase.hpp" "Benchmark.cpp" "Benchmark.hpp" "ArrayBenchmark.cpp" "ArrayBenchmark.hpp" "ListBenchmark.cpp" "ListBenchmark.hpp"   "Elements.hpp")
+add_executable (DataStructureBenchmark "DataStructureBenchmark.cpp" "DataStructureBenchmark.hpp"  "Benchmark.cpp" "Benchmark.hpp" "ArrayBenchmark.cpp" "ArrayBenchmark.hpp" "ListBenchmark.cpp" "ListBenchmark.hpp"   "Elements.hpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET DataStructureBenchmark PROPERTY CXX_STANDARD 17)

@@ -14,9 +14,10 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
 		std::cout << "Insert percentage: " << insertPercentage << "%" << std::endl;
 		std::cout << "---------------------------------" << std::endl;
 	}
-	std::unique_ptr<Benchmark<T>> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
-	std::unique_ptr<Benchmark<T>> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
+	std::unique_ptr<Benchmark> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
 	arrayBenchmark->runBenchmark();
+	
+	std::unique_ptr<Benchmark> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
 	listBenchmark->runBenchmark();
 }
 
