@@ -13,8 +13,7 @@ void ListBenchmark<T>::runBenchmark()
 	std::forward_list<T> collection(this->collectionSize);
 
 	const auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
-	const auto start = std::chrono::high_resolution_clock::now();
-
+	
 	bool run = true;
 	while (run)
 	{
@@ -87,6 +86,5 @@ void ListBenchmark<T>::runBenchmark()
 			}
 		}
 	}
-	const auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start).count();
-	this->printResults(duration);
+	this->printResults();
 }

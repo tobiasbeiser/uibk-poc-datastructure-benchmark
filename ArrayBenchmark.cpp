@@ -13,10 +13,8 @@ void ArrayBenchmark<T>::runBenchmark()
 	collection.reserve(this->collectionSize + 1);
 
 
-	auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
-	const auto start = std::chrono::high_resolution_clock::now();
+	const auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
 	bool run = true;
-	std::cout << "Running benchmark with " << this->collectionSize << " elements" << std::endl;
 	while (run)
 	{
 		for (int i = 0; i < this->collectionSize;)
@@ -77,6 +75,5 @@ void ArrayBenchmark<T>::runBenchmark()
 
 		}
 	}
-	const auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start).count();
-	this->printResults(duration);
+	this->printResults();
 }

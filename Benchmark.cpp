@@ -23,10 +23,10 @@ int Benchmark::getPadding()
     }
     return padding;
 }
-void Benchmark::printResults(const double duration )
+void Benchmark::printResults()
 {
-    int total = this->insertDeleteOperations + this->readWriteOperations;
-    std::cout << this->dataStructureName << ";" << (total) / duration << std::endl;
+    size_t total = this->insertDeleteOperations + this->readWriteOperations;
+    std::cout << this->dataStructureName << ";" << total / runtime << std::endl;
     // std::cout << "Padding: " << this->padding << std::endl;
     // std::cout << "Padding 1:" << this->getPadding1() << std::endl;
     // std::cout << "Padding 2: " << this->getPadding2() << std::endl;
