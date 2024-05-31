@@ -31,7 +31,7 @@ Note, if any data structure fails to allocate enough memory, the current run cra
 
 
 
-## Extending
+## Adding new Data Structures
 To add a new data structure to the benchmark you have to create a new class. Classes in C++ consist of a `.h` and a `.cpp` file. The header file tells us whats in the class and the `.cpp` file implements the required functions.
 
 ### Example
