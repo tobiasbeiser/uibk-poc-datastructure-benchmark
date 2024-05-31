@@ -4,8 +4,8 @@ template <typename T>
 class Benchmark : public BenchmarkBase
 {
 public:
-	Benchmark(int runtime, int collectionSize, int readPercentage, int insertPercentage)
-		: BenchmarkBase(runtime, collectionSize, readPercentage, insertPercentage) {}
+	Benchmark(int runtime, int collectionSize, int readPercentage, int insertPercentage, const std::string &dataStructureName)
+		: BenchmarkBase(runtime, collectionSize, readPercentage, insertPercentage, dataStructureName) {}
 	virtual ~Benchmark() = default;
 	virtual void runBenchmark() override= 0;
 

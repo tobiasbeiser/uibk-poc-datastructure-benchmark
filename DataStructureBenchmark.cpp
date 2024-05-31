@@ -3,22 +3,26 @@
 using namespace std;
 
 template <typename T>
-void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage, int benchmarkTime)
+void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage, int benchmarkTime, bool printInfo)
 {
-	std::cout << "Running benchmarks for element size: " << sizeof(T) << " bytes" << std::endl;
-	std::cout << "Collection size: " << collectionSize << std::endl;
-	::cout << "Read percentage: " << readPercentage << "%" << std::endl;
-	std::cout << "Insert percentage: " << insertPercentage << "%" << std::endl;
-	std::cout << "---------------------------------" << std::endl;
-	std::unique_ptr<Benchmark<T>> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime,collectionSize, readPercentage, insertPercentage));
-	std::unique_ptr<Benchmark<T>> listBenchmark(new ListBenchmark<T>(benchmarkTime,collectionSize, readPercentage, insertPercentage));
+	if (printInfo)
+	{
+
+		std::cout << "Running benchmarks for element size: " << sizeof(T) << " bytes" << std::endl;
+		std::cout << "Collection size: " << collectionSize << std::endl;
+		std::cout << "Read percentage: " << readPercentage << "%" << std::endl;
+		std::cout << "Insert percentage: " << insertPercentage << "%" << std::endl;
+		std::cout << "---------------------------------" << std::endl;
+	}
+	std::unique_ptr<Benchmark<T>> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
+	std::unique_ptr<Benchmark<T>> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
 	arrayBenchmark->runBenchmark();
-	std::cout << "---------------------------------" << std::endl;
 	listBenchmark->runBenchmark();
 }
 
 int main(int argc, char *argv[])
 {
+
 	if (argc != 6)
 	{
 		std::cout << "Invalid parameters! Usage:\n"
@@ -33,6 +37,7 @@ int main(int argc, char *argv[])
 	int readPercentage = atoi(argv[3]);
 	int insertPercentage = atoi(argv[4]);
 	int benchmarkTime = atoi(argv[5]);
+	bool printInfo = false;
 
 	if (insertPercentage + readPercentage != 100)
 	{
@@ -40,7 +45,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	if(insertPercentage > readPercentage)
+	if (insertPercentage > readPercentage)
 	{
 		std::cout << "Invalid parameters! Insert percentage must be smaller than read percentage" << std::endl;
 		return 1;
@@ -55,13 +60,14 @@ int main(int argc, char *argv[])
 	switch (elementSize)
 	{
 	case 1:
-		runBenchmarks<Element8Bytes>(collectionSize, readPercentage, insertPercentage, benchmarkTime);
+		runBenchmarks<Element8Bytes>(collectionSize, readPercentage, insertPercentage, benchmarkTime, printInfo);
 		break;
 	case 2:
-		runBenchmarks<Element512Bytes>(collectionSize, readPercentage, insertPercentage, benchmarkTime);
+		runBenchmarks<Element512Bytes>(collectionSize, readPercentage, insertPercentage, benchmarkTime, printInfo);
 		break;
 	case 3:
-		runBenchmarks<Element8MB>(collectionSize, readPercentage, insertPercentage, benchmarkTime);
+		std::cout << sizeof(Element8MB) << std::endl;
+		runBenchmarks<Element8MB>(collectionSize, readPercentage, insertPercentage, benchmarkTime, printInfo);
 		break;
 	default:
 		break;

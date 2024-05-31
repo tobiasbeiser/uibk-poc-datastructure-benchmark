@@ -11,6 +11,8 @@ void ArrayBenchmark<T>::runBenchmark()
 {
 	this->resetCounters();
 	std::vector<T> collection(this->collectionSize);
+    
+	
 	auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
 	bool run = true;
 	while (run)
@@ -22,7 +24,24 @@ void ArrayBenchmark<T>::runBenchmark()
 				run = false;
 				break;
 			}
-			if (this->insertPercentage > 0)
+
+			for (int k = 0; k < this->getPadding1() && i < this->collectionSize; k+=2)
+			{
+				// read
+				char data = collection.at(i).data[0];
+				data++;
+				i++;
+				this->readWriteOperations++;
+
+				// write
+				collection[i].data[0] = 0;
+				i++;
+				this->readWriteOperations++;
+			}
+
+			
+			
+			if (this->insertPercentage > 0 && i < this->collectionSize)
 			{
 				// insert
 				T newElement = T();
@@ -31,21 +50,23 @@ void ArrayBenchmark<T>::runBenchmark()
 				i++;
 			}
 
-			for (int k = 0; k < this->padding; k++)
+			for (int k = 0; k < this->getPadding2() && i < this->collectionSize; k+=2)
 			{
 				// read
 				char data = collection[i].data[0];
 				data++;
 				i++;
 				this->readWriteOperations++;
+
 				// write
 				collection[i].data[0] = 0;
 				i++;
 				this->readWriteOperations++;
 			}
 
+
 			// delete
-			if (this->insertPercentage > 0)
+			if (this->insertPercentage > 0 && i < this->collectionSize)
 			{
 				collection.pop_back();
 				i++;
@@ -54,12 +75,4 @@ void ArrayBenchmark<T>::runBenchmark()
 		}
 	}
 	this->printResults();
-	// std::cout << "Padding: " << padding << std::endl;
-	// std::cout << "Padding: " << padding << std::endl;
-	// std::cout << readWriteOperations << " read operations" << std::endl;
-	// std::cout << insertDeleteOperations << " insert operations" << std::endl;
-	// std::cout << "Array Benchmark:" << std::endl;
-	// std::cout << readWriteOperations + insertDeleteOperations << " / " << operations << std::endl;
-	// std::cout << "Read/Write Operations: " << readWriteOperations << std::endl;
-	// std::cout << "Insert/Delete Operations: " << insertDeleteOperations << std::endl;
 }

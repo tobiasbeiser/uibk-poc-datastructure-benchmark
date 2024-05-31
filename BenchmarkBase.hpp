@@ -5,8 +5,8 @@
 class BenchmarkBase
 {
 public:
-    BenchmarkBase(int runtime, int collectionSize, int readPercentage, int insertPercentage)
-        : runtime(runtime), collectionSize(collectionSize), readPercentage(readPercentage), insertPercentage(insertPercentage), padding(getPadding()) {}
+    BenchmarkBase(int runtime, int collectionSize, int readPercentage, int insertPercentage, const std::string& dataStructureName)
+        : runtime(runtime), collectionSize(collectionSize), readPercentage(readPercentage), insertPercentage(insertPercentage), dataStructureName(dataStructureName), padding(getPadding()) {}
     virtual void runBenchmark() = 0;
     virtual ~BenchmarkBase() = default;
 
@@ -15,14 +15,18 @@ protected:
     int readWriteOperations;
     int insertDeleteOperations;
 
-    const int collectionSize;
+    int collectionSize;
     const int readPercentage;
     const int insertPercentage;
-    const int padding;
+    
+    int getPadding1();
+    int getPadding2();
 
     void printResults();
     void resetCounters();
 
 private:
     int getPadding();
+    const int padding;
+    std::string dataStructureName;
 };

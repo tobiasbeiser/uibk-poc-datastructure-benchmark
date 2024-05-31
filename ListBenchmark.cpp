@@ -23,32 +23,65 @@ void ListBenchmark<T>::runBenchmark()
 				run = false;
 				break;
 			}
-			if (this->insertPercentage > 0)
-			{
-				T newElement = T();
-				collection.push_front(newElement);
-				this->insertDeleteOperations++;
-				it++;
-			}
 
-			for (int k = 0; k < this->padding; k++)
+			for (int k = 0; k < this->getPadding1() && it != collection.end(); k+=2)
 			{
 				// read
 				char data = (*it).data[0];
+				this->readWriteOperations++;
 				data++;
 				it++;
+				if (it == collection.end())
+				{
+					break;
+				}
+				
 				// write
 				(*it).data[0] = 0;
 				this->readWriteOperations++;
 				it++;
 			}
 
+
 			if (this->insertPercentage > 0)
+			{
+				T newElement = T();
+				collection.push_front(newElement);
+				this->insertDeleteOperations++;
+				if (it != collection.end())
+				{
+					it++;
+				}
+			}
+
+			for (int k = 0; k < this->getPadding2() && it != collection.end(); k+=2)
+			{
+				// read
+				char data = (*it).data[0];
+				this->readWriteOperations++;
+				data++;
+				it++;
+
+				if (it == collection.end())
+				{
+					break;
+				}
+				
+				// write
+				(*it).data[0] = 0;
+				this->readWriteOperations++;
+				it++;
+			}
+
+			if (this->insertPercentage > 0 && it != collection.end())
 			{
 				// delete
 				collection.pop_front();
 				this->insertDeleteOperations++;
-				it++;
+				if (it != collection.end())
+				{
+					it++;
+				}
 			}
 		}
 	}
