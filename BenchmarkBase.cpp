@@ -1,4 +1,4 @@
-#include "BenchmarkBase.h"
+#include "BenchmarkBase.hpp"
 
 int BenchmarkBase::getPadding()
 {

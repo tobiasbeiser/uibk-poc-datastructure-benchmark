@@ -1,4 +1,4 @@
-#include "ArrayBenchmark.h"
+#include "ArrayBenchmark.hpp"
 #include <vector>
 #include <memory>
 

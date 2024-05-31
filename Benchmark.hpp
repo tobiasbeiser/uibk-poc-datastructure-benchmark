@@ -1,5 +1,5 @@
 #pragma once
-#include "BenchmarkBase.h"
+#include "BenchmarkBase.hpp"
 template <typename T>
 class Benchmark : public BenchmarkBase
 {
