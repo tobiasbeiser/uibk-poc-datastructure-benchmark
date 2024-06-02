@@ -1,3 +1,6 @@
 build/*
 /.vs
 /out/build
+.idea/
+cmake-build-release/
+cmake-build-debug/
