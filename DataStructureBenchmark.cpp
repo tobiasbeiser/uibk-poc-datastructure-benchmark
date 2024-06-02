@@ -16,9 +16,10 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
 	}
 	std::unique_ptr<Benchmark> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
 	arrayBenchmark->runBenchmark();
-	
 	std::unique_ptr<Benchmark> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
 	listBenchmark->runBenchmark();
+    std::unique_ptr<Benchmark> unrolledLinkedListBenchmark(new UnrolledLinkedListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "UnrolledLinkedList"));
+    unrolledLinkedListBenchmark->runBenchmark();
 }
 
 int main(int argc, char *argv[])
