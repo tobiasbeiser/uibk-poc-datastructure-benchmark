@@ -4,5 +4,6 @@
 #include "ArrayBenchmark.hpp"
 #include "ListBenchmark.hpp"
 #include "UnrolledLinkedListBenchmark.hpp"
+#include "TieredArrayBenchmark.hpp"
 #include <cstdlib>
 #include <memory>
