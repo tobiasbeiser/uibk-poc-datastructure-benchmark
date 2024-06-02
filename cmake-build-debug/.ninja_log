@@ -1,8 +1,0 @@
-# ninja log v5
-1	321	1717324959065926908	CMakeFiles/DataStructureBenchmark.dir/ArrayBenchmark.cpp.o	99d113f6b45e509c
-0	277	1717324959021926838	CMakeFiles/DataStructureBenchmark.dir/Benchmark.cpp.o	6e3ebff975205639
-0	12	1717332206390557580	build.ninja	2f767cc7629f2d8d
-1	547	1717324959289927261	CMakeFiles/DataStructureBenchmark.dir/UnrolledLinkedListBenchmark.cpp.o	28d1ce0eb9cb57ea
-548	600	1717324959341927344	DataStructureBenchmark	5728f202d4b115e8
-0	386	1717324959129927008	CMakeFiles/DataStructureBenchmark.dir/DataStructureBenchmark.cpp.o	ee2611790aa7ee6a
-1	290	1717324959033926857	CMakeFiles/DataStructureBenchmark.dir/ListBenchmark.cpp.o	e7652949dbb3a4d9
