@@ -3,7 +3,7 @@
 template<typename T>
 class TieredArray {
 public:
-    explicit TieredArray(size_t n, size_t chunkSize)
+    TieredArray(size_t n, size_t chunkSize)
         : totalElements(n), chunkSize(chunkSize) {
 //        Initialize Layers
         size_t size = n + 1;
@@ -15,44 +15,46 @@ public:
     }
     virtual ~TieredArray() {}
 
-    void insert(size_t i, T& value) {
+    void insert(size_t i) {
+        T* value = new T();
         size_t chunkIndex = i / chunkSize;
         size_t position = i % chunkSize;
-        T previous = value;
-        T current = tiers[chunkIndex][position];
+        T* previous = value;
+        T* current = &(tiers[chunkIndex][position]);
 //        chunk with element
         for (size_t k = position; k < tiers[chunkIndex].size(); k++) {
-            current = tiers[chunkIndex][k];
-            tiers[chunkIndex][k] = previous;
+            current = &(tiers[chunkIndex][k]);
+            tiers[chunkIndex][k] = *previous;
             previous = current;
         }
         for (size_t j = chunkIndex + 1; j < tiers.size(); j++) {
             for (int k = 0; k < tiers[j].size(); k++) {
-                current = tiers[j][k];
-                tiers[j][k] = previous;
+                current = &(tiers[j][k]);
+                tiers[j][k] = *previous;
                 previous = current;
             }
         }
+        delete value;
         totalElements++;
     }
 
     void del(size_t i) {
         size_t chunkIndex = i / chunkSize;
         size_t position = i % chunkSize;
-        T current = tiers.back().back();
+        T* current = &(tiers.back().back());
 //        take some trash value to set for the last value (which is officially no part of the array anymore)
-        T next = tiers.back().back();
+        T* next = &(tiers.back().back());
         for (size_t j = tiers.size() - 1; j > chunkIndex; j--) {
             for (int k = tiers[j].size() - 1; k >= 0; k--) {
-                current = tiers[j][k];
-                tiers[j][k] = next;
+                current = &(tiers[j][k]);
+                tiers[j][k] = *next;
                 next = current;
             }
         }
 //        chunk with element
         for (int k = tiers[chunkIndex].size() - 1; k >= position; k--) {
-            current = tiers[chunkIndex][k];
-            tiers[chunkIndex][k] = next;
+            current = &(tiers[chunkIndex][k]);
+            tiers[chunkIndex][k] = *next;
             next = current;
         }
         totalElements--;
@@ -98,13 +100,11 @@ void TieredArrayBenchmark<T>::runBenchmark()
 				run = false;
 				break;
 			}
-            T element;
 			for (int k = 0; k < this->getPadding1() && i < collection.size() - 1; k += 2)
 			{
                 
 				// read
-                element = collection.at(i);
-                char charData = element.data[0];
+                char charData = collection.at(i).data[0];
 				charData++;
 				i++;
 				this->readWriteOperations++;
@@ -118,8 +118,7 @@ void TieredArrayBenchmark<T>::runBenchmark()
 			if (this->insertPercentage > 0 && i < collection.size())
 			{
 				// insert
-                // TODO: create an element for insert
-				collection.insert(i, element);
+				collection.insert(i);
 				this->insertDeleteOperations++;
 				i++;
 			}
