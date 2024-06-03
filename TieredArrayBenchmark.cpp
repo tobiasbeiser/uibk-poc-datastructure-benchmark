@@ -7,13 +7,13 @@ public:
         : totalElements(n), chunkSize(chunkSize) {
 //        Initialize Layers
         size_t size = n + 1;
-        size_t numChunks = size / chunkSize;
+        size_t numChunks = ceil(size / (double) chunkSize);
         tiers = std::vector<std::vector<T>>(numChunks);
-        for (int i = 0; i < numChunks - 1; i++) {
+        for (int i = 0; i < numChunks; i++) {
             tiers[i] = std::vector<T>(chunkSize);
         }
-        tiers[numChunks - 1] = std::vector<T>(size % chunkSize);
     }
+    virtual ~TieredArray() {}
 
     void insert(size_t i, T& value) {
         size_t chunkIndex = i / chunkSize;
@@ -21,7 +21,7 @@ public:
         T previous = value;
         T current = tiers[chunkIndex][position];
 //        chunk with element
-        for (size_t k = position; k < chunkSize; k++) {
+        for (size_t k = position; k < tiers[chunkIndex].size(); k++) {
             current = tiers[chunkIndex][k];
             tiers[chunkIndex][k] = previous;
             previous = current;
@@ -39,9 +39,9 @@ public:
     void del(size_t i) {
         size_t chunkIndex = i / chunkSize;
         size_t position = i % chunkSize;
-        T current = tiers[0][0];
+        T current = tiers.back().back();
 //        take some trash value to set for the last value (which is officially no part of the array anymore)
-        T next = tiers[0][0];
+        T next = tiers.back().back();
         for (size_t j = tiers.size() - 1; j > chunkIndex; j--) {
             for (int k = tiers[j].size() - 1; k >= 0; k--) {
                 current = tiers[j][k];
@@ -98,12 +98,14 @@ void TieredArrayBenchmark<T>::runBenchmark()
 				run = false;
 				break;
 			}
-			for (int k = 0; k < this->getPadding1() && i < collection.size(); k += 2)
+            T element;
+			for (int k = 0; k < this->getPadding1() && i < collection.size() - 1; k += 2)
 			{
                 
 				// read
-                char data = collection.at(i).data[0];
-				data++;
+                element = collection.at(i);
+                char charData = element.data[0];
+				charData++;
 				i++;
 				this->readWriteOperations++;
 
@@ -117,11 +119,11 @@ void TieredArrayBenchmark<T>::runBenchmark()
 			{
 				// insert
                 // TODO: create an element for insert
-				// collection.insert(i, element);
+				collection.insert(i, element);
 				this->insertDeleteOperations++;
 				i++;
 			}
-			for (int k = 0; k < this->getPadding2() && i < collection.size(); k += 2)
+			for (int k = 0; k < this->getPadding2() && i < collection.size() - 1; k += 2)
 			{
 				// read
 				char data = collection.at(i).data[0];
@@ -137,7 +139,7 @@ void TieredArrayBenchmark<T>::runBenchmark()
 
 
 
-			if (this->insertPercentage > 0 && i < this->collectionSize)
+			if (this->insertPercentage > 0 && i < collection.size())
 			{
 				// delete
 				collection.del(i);
