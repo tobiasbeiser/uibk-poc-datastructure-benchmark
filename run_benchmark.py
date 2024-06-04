@@ -127,6 +127,7 @@ def main():
         for element_size in element_sizes:
             for insert_ratio in insert_ratios:
                 
+                # skip benchmarks that run out of memory 
                 if n>1000 and element_size >= 3:
                     continue
 
