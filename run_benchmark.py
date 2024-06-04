@@ -126,6 +126,9 @@ def main():
     for n in number_of_elements:
         for element_size in element_sizes:
             for insert_ratio in insert_ratios:
+                
+                if n>1000 and element_size >= 3:
+                    continue
 
                 read_ratio = 100 - insert_ratio
                 program_with_args = program + \

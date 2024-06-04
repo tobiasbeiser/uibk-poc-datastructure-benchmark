@@ -2,6 +2,7 @@
 #include "Elements.hpp"
 #include <iostream>
 #include <chrono>
+#include <memory>
 class Benchmark
 {
 public:
