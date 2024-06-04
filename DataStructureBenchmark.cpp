@@ -24,8 +24,11 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
         tieredArrayBenchmark->runBenchmark();
 
     }
-    std::unique_ptr<Benchmark> unrolledLinkedListBenchmark(new UnrolledLinkedListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "UnrolledLinkedList"));
-    unrolledLinkedListBenchmark->runBenchmark();
+    for (int i = 8; i <= 32; i *= 2) {
+        std::unique_ptr<Benchmark> unrolledLinkedListBenchmark(
+                new UnrolledLinkedListBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "UnrolledLinkedListChunkSize" + std::to_string(i)));
+        unrolledLinkedListBenchmark->runBenchmark();
+    }
 }
 
 int main(int argc, char *argv[])

@@ -3,33 +3,32 @@
 #include <memory>
 #include <iostream>
 
-constexpr size_t CHUNK_SIZE = 32;
-
 template <typename T>
 struct UnrolledLinkedListNode {
     std::vector<std::shared_ptr<T>> elements;
     std::shared_ptr<UnrolledLinkedListNode<T>> next;
 
-    UnrolledLinkedListNode() : elements(), next(nullptr) {
-        elements.reserve(CHUNK_SIZE);
+    explicit UnrolledLinkedListNode(size_t chunkSize) : elements(), next(nullptr) {
+        elements.reserve(chunkSize);
     }
 };
 
 template <typename T>
 class UnrolledLinkedList {
 public:
-    explicit UnrolledLinkedList(size_t initialSize) {
-        size_t numChunks = (initialSize + CHUNK_SIZE - 1) / CHUNK_SIZE;
-        head = std::make_shared<UnrolledLinkedListNode<T>>();
+    UnrolledLinkedList(size_t initialSize, size_t chunkSize)
+    : chunkSize(chunkSize){
+        size_t numChunks = (initialSize + chunkSize - 1) / chunkSize;
+        head = std::make_shared<UnrolledLinkedListNode<T>>(chunkSize);
         auto current = head;
         for (size_t i = 0; i < numChunks - 1; ++i) {
-            for (int j = 0; j < CHUNK_SIZE; ++j) {
+            for (int j = 0; j < chunkSize; ++j) {
                 current->elements.emplace_back(std::make_shared<T>());
             }
-            current->next = std::make_shared<UnrolledLinkedListNode<T>>();
+            current->next = std::make_shared<UnrolledLinkedListNode<T>>(chunkSize);
             current = current->next;
         }
-        for (int i = 0; i < initialSize % CHUNK_SIZE; ++i) {
+        for (int i = 0; i < initialSize % chunkSize; ++i) {
             current->elements.emplace_back(std::make_shared<T>());
         }
         current->next = nullptr;
@@ -49,12 +48,12 @@ public:
     }
 
     std::shared_ptr<UnrolledLinkedListNode<T>> insert(std::shared_ptr<UnrolledLinkedListNode<T>>& node, size_t& chunkIndex) {
-        if (node->elements.size() < CHUNK_SIZE) {
+        if (node->elements.size() < chunkSize) {
             node->elements.insert(node->elements.begin() + chunkIndex, std::make_shared<T>());
             chunkIndex++;
             return node;
         } else {
-            auto newNode = std::make_shared<UnrolledLinkedListNode<T>>();
+            auto newNode = std::make_shared<UnrolledLinkedListNode<T>>(chunkSize);
             size_t halfSize = node->elements.size() / 2;
             newNode->elements.insert(newNode->elements.end(),
                                      std::make_move_iterator(node->elements.begin() + halfSize),
@@ -77,8 +76,10 @@ public:
             chunkIndex = 0;
         }
     }
-
     std::shared_ptr<UnrolledLinkedListNode<T>> head;
+private:
+    size_t chunkSize;
+
 };
 
 template void UnrolledLinkedListBenchmark<Element8Bytes>::runBenchmark();
@@ -89,7 +90,7 @@ template <typename T>
 void UnrolledLinkedListBenchmark<T>::runBenchmark()
 {
     // Initialize the unrolled linked list with the specified collection size.
-    UnrolledLinkedList<T> collection(this->collectionSize);
+    UnrolledLinkedList<T> collection(this->collectionSize, this->chunkSize);
 
     // Reset counters before every benchmark to ensure correct stats.
     this->resetCounters();
