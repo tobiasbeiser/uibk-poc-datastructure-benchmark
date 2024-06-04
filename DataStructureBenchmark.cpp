@@ -14,6 +14,7 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
 		std::cout << "Insert percentage: " << insertPercentage << "%" << std::endl;
 		std::cout << "---------------------------------" << std::endl;
 	}
+
 	std::unique_ptr<Benchmark> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
 	arrayBenchmark->runBenchmark();
 	std::unique_ptr<Benchmark> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 		std::cout << "Invalid parameters! Usage:\n"
 				  << argv[0] << "<elementSize> <collectionSize> <insert/delete percentage> <read/write percentage> <benchmark time>";
 		std::cout << "Element size:}\n 1: 8 bytes\n 2: 512 bytes\n 3: 8MB\n";
-		std::cout << "Example: " << argv[0] << "1 1000 10 90" << std::endl;
+		std::cout << "Example: " << argv[0] << " 1 1000 10 90" << std::endl;
 		return 1;
 	}
 
@@ -70,7 +71,6 @@ int main(int argc, char *argv[])
 		runBenchmarks<Element512Bytes>(collectionSize, readPercentage, insertPercentage, benchmarkTime, printInfo);
 		break;
 	case 3:
-		std::cout << sizeof(Element8MB) << std::endl;
 		runBenchmarks<Element8MB>(collectionSize, readPercentage, insertPercentage, benchmarkTime, printInfo);
 		break;
 	default:

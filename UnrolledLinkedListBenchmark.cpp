@@ -1,6 +1,7 @@
 #include "UnrolledLinkedListBenchmark.hpp"
 #include <vector>
 #include <memory>
+#include <iostream>
 
 constexpr size_t CHUNK_SIZE = 32;
 
@@ -23,13 +24,13 @@ public:
         auto current = head;
         for (size_t i = 0; i < numChunks-1; ++i) {
             for (int j = 0; j < CHUNK_SIZE; ++j) {
-                current->elements.emplace_back(T());
+                current->elements.emplace_back(*std::make_shared<T>());
             }
             current->next = std::make_shared<UnrolledLinkedListNode<T>>();
             current = current->next;
         }
         for (int i = 0; i < initialSize % CHUNK_SIZE; ++i) {
-            current->elements.emplace_back(T());
+            current->elements.emplace_back(*std::make_shared<T>());
         }
         current->next = nullptr;
     }
@@ -112,6 +113,7 @@ void UnrolledLinkedListBenchmark<T>::runBenchmark()
     bool run = true;
     auto node = collection.head;
     size_t chunkIndex = 0;
+    std::shared_ptr toInsert = std::make_shared<T>();
     while (run)
     {
         if (!node) {
@@ -156,7 +158,7 @@ void UnrolledLinkedListBenchmark<T>::runBenchmark()
         if (this->insertPercentage > 0 && node != nullptr)
         {
 
-            std::shared_ptr<UnrolledLinkedListNode<T>> tmp = collection.insert(node, chunkIndex, T());
+            std::shared_ptr<UnrolledLinkedListNode<T>> tmp = collection.insert(node, chunkIndex, *toInsert);
             this->insertDeleteOperations++;
 
             if(tmp != node || ++chunkIndex >= node->elements.size()){
