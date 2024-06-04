@@ -7,7 +7,7 @@ constexpr size_t CHUNK_SIZE = 32;
 
 template <typename T>
 struct UnrolledLinkedListNode {
-    std::vector<T> elements;
+    std::vector<std::shared_ptr<T>> elements;
     std::shared_ptr<UnrolledLinkedListNode<T>> next;
 
     UnrolledLinkedListNode() : elements(), next(nullptr) {
@@ -22,67 +22,53 @@ public:
         size_t numChunks = (initialSize + CHUNK_SIZE - 1) / CHUNK_SIZE;
         head = std::make_shared<UnrolledLinkedListNode<T>>();
         auto current = head;
-        for (size_t i = 0; i < numChunks-1; ++i) {
+        for (size_t i = 0; i < numChunks - 1; ++i) {
             for (int j = 0; j < CHUNK_SIZE; ++j) {
-                current->elements.emplace_back(*std::make_shared<T>());
+                current->elements.emplace_back(std::make_shared<T>());
             }
             current->next = std::make_shared<UnrolledLinkedListNode<T>>();
             current = current->next;
         }
         for (int i = 0; i < initialSize % CHUNK_SIZE; ++i) {
-            current->elements.emplace_back(*std::make_shared<T>());
+            current->elements.emplace_back(std::make_shared<T>());
         }
         current->next = nullptr;
     }
 
-    /*
-    void printList(size_t initialSize) {
-        size_t numChunks = (initialSize + CHUNK_SIZE - 1) / CHUNK_SIZE;
-        auto current = head;
-        for (size_t i = 0; i < numChunks; ++i) {
-            std::cout << "Node: " << current << ", next: " << current->next << std::endl;
-            current = current->next;
-        }
-        std::cout << current << std::endl;
-    }
-     */
-
     void read(std::shared_ptr<UnrolledLinkedListNode<T>>& node, size_t& chunkIndex) {
-        //std::cout << "READ " << node.get() << " index " << chunkIndex << std::endl;
         if (chunkIndex < node->elements.size()) {
-            char data = node->elements[chunkIndex].data[0];
+            char data = node->elements[chunkIndex]->data[0];
             data++;
         }
     }
 
     void write(std::shared_ptr<UnrolledLinkedListNode<T>>& node, size_t& chunkIndex) {
-        //std::cout << "WRITE " << node.get() << " index " << chunkIndex << std::endl;
         if (chunkIndex < node->elements.size()) {
-            node->elements[chunkIndex].data[0] = 0;
+            node->elements[chunkIndex]->data[0] = 0;
         }
     }
 
-    std::shared_ptr<UnrolledLinkedListNode<T>> insert(std::shared_ptr<UnrolledLinkedListNode<T>>& node, size_t& chunkIndex, const T& newElement) {
-        //std::cout << "INSERT " << node.get() << " index " << chunkIndex << std::endl;
+    std::shared_ptr<UnrolledLinkedListNode<T>> insert(std::shared_ptr<UnrolledLinkedListNode<T>>& node, size_t& chunkIndex) {
         if (node->elements.size() < CHUNK_SIZE) {
-            node->elements.emplace(node->elements.begin() + chunkIndex, newElement);
+            node->elements.insert(node->elements.begin() + chunkIndex, std::make_shared<T>());
             chunkIndex++;
             return node;
         } else {
             auto newNode = std::make_shared<UnrolledLinkedListNode<T>>();
             size_t halfSize = node->elements.size() / 2;
-            newNode->elements.insert(newNode->elements.end(), std::make_move_iterator(node->elements.begin() + halfSize), std::make_move_iterator(node->elements.end()));
+            newNode->elements.insert(newNode->elements.end(),
+                                     std::make_move_iterator(node->elements.begin() + halfSize),
+                                     std::make_move_iterator(node->elements.end()));
             node->elements.erase(node->elements.begin() + halfSize, node->elements.end());
-            newNode->elements.emplace(newNode->elements.end(), newElement);
+            newNode->elements.insert(newNode->elements.end(), std::make_shared<T>());
             newNode->next = node->next;
             node->next = newNode;
-            chunkIndex = newNode->elements.size();
+            chunkIndex = newNode->elements.size() - 1; // adjust chunkIndex to point to the newly inserted element
             return newNode;
         }
     }
 
     void remove(std::shared_ptr<UnrolledLinkedListNode<T>>& node, size_t& chunkIndex) {
-        //std::cout << "DELETE " << node.get() << " index " << chunkIndex << std::endl;
         if (!node->elements.empty()) {
             node->elements.pop_back();
         }
@@ -113,7 +99,7 @@ void UnrolledLinkedListBenchmark<T>::runBenchmark()
     bool run = true;
     auto node = collection.head;
     size_t chunkIndex = 0;
-    std::shared_ptr toInsert = std::make_shared<T>();
+    std::shared_ptr<T> toInsert = std::make_shared<T>();
     while (run)
     {
         if (!node) {
@@ -157,8 +143,7 @@ void UnrolledLinkedListBenchmark<T>::runBenchmark()
 
         if (this->insertPercentage > 0 && node != nullptr)
         {
-
-            std::shared_ptr<UnrolledLinkedListNode<T>> tmp = collection.insert(node, chunkIndex, *toInsert);
+            std::shared_ptr<UnrolledLinkedListNode<T>> tmp = collection.insert(node, chunkIndex);
             this->insertDeleteOperations++;
 
             if(tmp != node || ++chunkIndex >= node->elements.size()){
