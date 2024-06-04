@@ -20,7 +20,7 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
 	std::unique_ptr<Benchmark> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
 	listBenchmark->runBenchmark();
     for (int i = 2; i <= 16; i *= 2) {
-        std::unique_ptr<Benchmark> tieredArrayBenchmark(new TieredArrayBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "TieredArray,ChunkSize:" + std::to_string(i)));
+        std::unique_ptr<Benchmark> tieredArrayBenchmark(new TieredArrayBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "TieredArrayChunkSize" + std::to_string(i)));
         tieredArrayBenchmark->runBenchmark();
 
     }
