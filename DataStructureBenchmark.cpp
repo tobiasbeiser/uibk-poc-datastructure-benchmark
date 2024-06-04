@@ -17,6 +17,7 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
 
 	std::unique_ptr<Benchmark> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
 	arrayBenchmark->runBenchmark();
+
 	std::unique_ptr<Benchmark> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
 	listBenchmark->runBenchmark();
     for (int i = 2; i <= 16; i *= 2) {
@@ -28,16 +29,18 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
         std::unique_ptr<Benchmark> unrolledLinkedListBenchmark(
                 new UnrolledLinkedListBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "UnrolledLinkedListChunkSize" + std::to_string(i)));
         unrolledLinkedListBenchmark->runBenchmark();
-    }
+    }  
+	std::unique_ptr<Benchmark> listRandomAccessBenchmark(new ListRandomAccessBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list_random"));
+	listRandomAccessBenchmark->runBenchmark();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 
 	if (argc != 6)
 	{
 		std::cout << "Invalid parameters! Usage:\n"
-				  << argv[0] << "<elementSize> <collectionSize> <insert/delete percentage> <read/write percentage> <benchmark time>";
+			<< argv[0] << "<elementSize> <collectionSize> <insert/delete percentage> <read/write percentage> <benchmark time>";
 		std::cout << "Element size:}\n 1: 8 bytes\n 2: 512 bytes\n 3: 8MB\n";
 		std::cout << "Example: " << argv[0] << " 1 1000 10 90" << std::endl;
 		return 1;

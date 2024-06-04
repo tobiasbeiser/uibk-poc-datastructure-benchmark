@@ -5,5 +5,6 @@
 #include "ListBenchmark.hpp"
 #include "UnrolledLinkedListBenchmark.hpp"
 #include "TieredArrayBenchmark.hpp"
+#include "ListRandomAccessBenchmark.hpp"
 #include <cstdlib>
 #include <memory>

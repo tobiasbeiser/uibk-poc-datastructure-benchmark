@@ -12,10 +12,10 @@ endif()
 project ("DataStructureBenchmark")
 
 # Add source to this project's executable.
-add_executable (DataStructureBenchmark "DataStructureBenchmark.cpp" "DataStructureBenchmark.hpp"  "Benchmark.cpp" "Benchmark.hpp" "ArrayBenchmark.cpp" "ArrayBenchmark.hpp" "ListBenchmark.cpp" "ListBenchmark.hpp" "UnrolledLinkedListBenchmark.cpp" "UnrolledLinkedListBenchmark.hpp" "TieredArrayBenchmark.cpp" "TieredArrayBenchmark.hpp" "Elements.hpp")
+add_executable (DataStructureBenchmark "DataStructureBenchmark.cpp" "DataStructureBenchmark.hpp"  "Benchmark.cpp" "Benchmark.hpp" "ArrayBenchmark.cpp" "ArrayBenchmark.hpp" "ListBenchmark.cpp" "ListBenchmark.hpp" "UnrolledLinkedListBenchmark.cpp" "UnrolledLinkedListBenchmark.hpp" "TieredArrayBenchmark.cpp" "TieredArrayBenchmark.hpp" "ListRandomAccessBenchmark.cpp" "ListRandomAccessBenchmark.hpp" "Elements.hpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET DataStructureBenchmark PROPERTY CXX_STANDARD 17)
+  set_property(TARGET DataStructureBenchmark PROPERTY CXX_STANDARD 20)
 endif()
 
 # TODO: Add tests and install targets if needed.
