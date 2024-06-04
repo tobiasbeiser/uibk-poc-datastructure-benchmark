@@ -14,28 +14,24 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
 		std::cout << "Insert percentage: " << insertPercentage << "%" << std::endl;
 		std::cout << "---------------------------------" << std::endl;
 	}
-
-	std::unique_ptr<Benchmark> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
-	arrayBenchmark->runBenchmark();
-
-	std::unique_ptr<Benchmark> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
-	listBenchmark->runBenchmark();
+	std::vector<unique_ptr<Benchmark>> benchmarks;
+	benchmarks.push_back(std::make_unique<ArrayBenchmark<T>>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
+	benchmarks.push_back(std::make_unique<ArrayRandomAccessBenchmark<T>>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector_random"));
+	benchmarks.push_back(std::make_unique<ListBenchmark<T>>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
+	benchmarks.push_back(std::make_unique<ListRandomAccessBenchmark<T>>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list_random"));
 	for (int i = 2; i <= 16; i *= 2) {
-		std::unique_ptr<Benchmark> tieredArrayBenchmark(new TieredArrayBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "TieredArrayChunkSize" + std::to_string(i)));
-		tieredArrayBenchmark->runBenchmark();
-
+		benchmarks.push_back(std::make_unique<TieredArrayBenchmark<T>>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "TieredArrayChunkSize" + std::to_string(i)));
+		benchmarks.push_back(std::make_unique<TieredArrayRandomBenchmark<T>>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "TieredArrayRandomChunkSize" + std::to_string(i)));
 	}
 	for (int i = 8; i <= 32; i *= 2) {
-		std::unique_ptr<Benchmark> unrolledLinkedListBenchmark(
-			new UnrolledLinkedListBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "UnrolledLinkedListChunkSize" + std::to_string(i)));
-		unrolledLinkedListBenchmark->runBenchmark();
+		benchmarks.push_back(std::make_unique<UnrolledLinkedListBenchmark<T>>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "UnrolledLinkedListChunkSize" + std::to_string(i)));
+		benchmarks.push_back(std::make_unique<UnrolledLinkedListRandomBenchmark<T>>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "UnrolledLinkedListRandomChunkSize" + std::to_string(i)));
 	}
 
-	std::unique_ptr<Benchmark> listRandomAccessBenchmark(new ListRandomAccessBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list_random"));
-	listRandomAccessBenchmark->runBenchmark();
-
-	std::unique_ptr<Benchmark> arrayRandomAccessBenchmark(new ArrayRandomAccessBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector_random"));
-	arrayRandomAccessBenchmark->runBenchmark();
+	// run all the benchmarks
+	for (auto& benchmark : benchmarks) {
+		benchmark->runBenchmark();
+	}
 
 }
 

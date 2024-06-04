@@ -1,5 +1,6 @@
 #pragma once
 #include "Benchmark.hpp"
+#include "Types/TieredArray.hpp"
 #include <vector>
 #include <any>
 #include <cmath>

@@ -1,6 +1,6 @@
 #pragma once
 #include "Benchmark.hpp"
-#include <vector>
+#include "Types/UnrolledLinkedList.hpp"
 template <typename T>
 class UnrolledLinkedListBenchmark : public Benchmark
 {

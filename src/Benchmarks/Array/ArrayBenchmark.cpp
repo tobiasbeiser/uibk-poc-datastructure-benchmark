@@ -1,5 +1,4 @@
 #include "ArrayBenchmark.hpp"
-//#include <memory>
 
 template void ArrayBenchmark<Element8Bytes>::runBenchmark();
 template void ArrayBenchmark<Element512Bytes>::runBenchmark();
