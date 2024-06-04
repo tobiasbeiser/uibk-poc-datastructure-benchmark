@@ -77,7 +77,6 @@ int main(int argc, char* argv[])
 		runBenchmarks<Element512Bytes>(collectionSize, readPercentage, insertPercentage, benchmarkTime, printInfo);
 		break;
 	case 3:
-		std::cout << sizeof(Element8MB) << std::endl;
 		runBenchmarks<Element8MB>(collectionSize, readPercentage, insertPercentage, benchmarkTime, printInfo);
 		break;
 	default:
