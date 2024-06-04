@@ -14,21 +14,24 @@ void runBenchmarks(int collectionSize, int readPercentage, int insertPercentage,
 		std::cout << "Insert percentage: " << insertPercentage << "%" << std::endl;
 		std::cout << "---------------------------------" << std::endl;
 	}
-	std::unique_ptr<Benchmark> listRandomAccessBenchmark(new ListRandomAccessBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list_random"));
-	listRandomAccessBenchmark->runBenchmark();
 
 	std::unique_ptr<Benchmark> arrayBenchmark(new ArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::vector"));
 	arrayBenchmark->runBenchmark();
 
 	std::unique_ptr<Benchmark> listBenchmark(new ListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list"));
 	listBenchmark->runBenchmark();
+    for (int i = 2; i <= 16; i *= 2) {
+        std::unique_ptr<Benchmark> tieredArrayBenchmark(new TieredArrayBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "TieredArrayChunkSize" + std::to_string(i)));
+        tieredArrayBenchmark->runBenchmark();
 
-	std::unique_ptr<Benchmark> tieredArrayBenchmark(new TieredArrayBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "TieredArray"));
-	tieredArrayBenchmark->runBenchmark();
-
-	std::unique_ptr<Benchmark> unrolledLinkedListBenchmark(new UnrolledLinkedListBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "UnrolledLinkedList"));
-	unrolledLinkedListBenchmark->runBenchmark();
-
+    }
+    for (int i = 8; i <= 32; i *= 2) {
+        std::unique_ptr<Benchmark> unrolledLinkedListBenchmark(
+                new UnrolledLinkedListBenchmark<T>(benchmarkTime, collectionSize, i, readPercentage, insertPercentage, "UnrolledLinkedListChunkSize" + std::to_string(i)));
+        unrolledLinkedListBenchmark->runBenchmark();
+    }  
+	std::unique_ptr<Benchmark> listRandomAccessBenchmark(new ListRandomAccessBenchmark<T>(benchmarkTime, collectionSize, readPercentage, insertPercentage, "std::forward_list_random"));
+	listRandomAccessBenchmark->runBenchmark();
 }
 
 int main(int argc, char* argv[])
@@ -39,7 +42,7 @@ int main(int argc, char* argv[])
 		std::cout << "Invalid parameters! Usage:\n"
 			<< argv[0] << "<elementSize> <collectionSize> <insert/delete percentage> <read/write percentage> <benchmark time>";
 		std::cout << "Element size:}\n 1: 8 bytes\n 2: 512 bytes\n 3: 8MB\n";
-		std::cout << "Example: " << argv[0] << "1 1000 10 90" << std::endl;
+		std::cout << "Example: " << argv[0] << " 1 1000 10 90" << std::endl;
 		return 1;
 	}
 
