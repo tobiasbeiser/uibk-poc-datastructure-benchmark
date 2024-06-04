@@ -44,7 +44,7 @@ void ArrayBenchmark<T>::runBenchmark()
 			if (this->insertPercentage > 0 && i < this->collectionSize)
 			{
 				// insert
-				collection.emplace_back();
+				collection.emplace(collection.begin()+i);
 				this->insertDeleteOperations++;
 				i++;
 			}
@@ -68,7 +68,7 @@ void ArrayBenchmark<T>::runBenchmark()
 			if (this->insertPercentage > 0 && i < this->collectionSize)
 			{
 				// delete
-				collection.pop_back();
+				collection.erase(collection.begin() + i);
 				i++;
 				this->insertDeleteOperations++;
 			}
