@@ -9,11 +9,11 @@ template <typename T>
 void ArrayBenchmark<T>::runBenchmark()
 {
 	this->resetCounters();
-	auto collection = std::make_unique<std::vector<T>>();
-	collection->reserve(this->collectionSize * 2 + 1);
-	for (int i = 0; i < this->collectionSize; i++)
+	auto collection = std::make_unique<std::vector<std::unique_ptr<T>>>();
+	collection->resize(this->collectionSize + 1);
+	for (int i = 0; i < this->collectionSize+1; i++)
 	{
-		collection->emplace_back();
+		collection->at(i) = std::make_unique<T>();
 	}
 
 
@@ -32,7 +32,7 @@ void ArrayBenchmark<T>::runBenchmark()
 			for (int k = 0; k < this->getPadding1() && i < collection->size(); k += 2)
 			{
 				// read
-				char data = collection->at(i).data[0];
+				char data = collection->at(i)->data[0];
 				data++;
 				i++;
 				this->readWriteOperations++;
@@ -42,7 +42,7 @@ void ArrayBenchmark<T>::runBenchmark()
 				}
 
 				// write
-				collection->at(i).data[0] = 0;
+				collection->at(i)->data[0] = 0;
 				i++;
 				this->readWriteOperations++;
 			}
@@ -54,7 +54,7 @@ void ArrayBenchmark<T>::runBenchmark()
 				// insert
 				// for some reason using emplace will cause a stack overflow when T is Element8MB
 				// even the use of collection->emplace(collection-end()) will cause a stack overflow while the the following line will not
-				collection->emplace_back();
+				collection->emplace_back(std::make_unique<T>());
 				this->insertDeleteOperations++;
 				i++;
 			}
@@ -62,7 +62,7 @@ void ArrayBenchmark<T>::runBenchmark()
 			for (int k = 0; k < this->getPadding2() && i < collection->size(); k += 2)
 			{
 				// read
-				char data = collection->at(i).data[0];
+				char data = collection->at(i)->data[0];
 				data++;
 				i++;
 				this->readWriteOperations++;
@@ -71,7 +71,7 @@ void ArrayBenchmark<T>::runBenchmark()
 					break;
 				}
 				// write
-				collection->at(i).data[0] = 0;
+				collection->at(i)->data[0] = 0;
 				i++;
 				this->readWriteOperations++;
 			}
