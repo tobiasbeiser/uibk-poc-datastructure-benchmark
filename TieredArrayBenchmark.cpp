@@ -86,8 +86,7 @@ void TieredArrayBenchmark<T>::runBenchmark()
 {
     
 	this->resetCounters();
-//    TODO: chunkSize in TieredArrayBenchmark
-	TieredArray<T> collection(this->collectionSize, 4);
+	TieredArray<T> collection(this->collectionSize, this->chunkSize);
     
 	const auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
 	bool run = true;
