@@ -13,6 +13,9 @@ template <typename T>
 void ListRandomAccessBenchmark<T>::runBenchmark()
 {
 	this->resetCounters();
+	// to simulate random access, we store the nodes in a vector and shuffle them
+	// we then iterate over the vector and get a different starting node for each iteration
+	// this way the overhead for generating the random access pattern is not included in the benchmark
 	std::forward_list<T> collection(collectionSize);
 	std::vector<typename std::forward_list<T>::iterator> nodes;
 	nodes.reserve(this->collectionSize);
@@ -22,8 +25,6 @@ void ListRandomAccessBenchmark<T>::runBenchmark()
 	}
 	auto rng = std::default_random_engine{};
 	std::shuffle(nodes.begin(), nodes.end(), rng);
-
-	std::cout<< "Initialization complete" << std::endl;
 
 
 	const auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(this->runtime);
