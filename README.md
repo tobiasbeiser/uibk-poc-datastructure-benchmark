@@ -19,7 +19,7 @@ git push
 ## Building
 ```bash
 mkdir build && cd build
-cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Releaes && ninja
+cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release && ninja
 ```
 ## Running Benchmarks
 To run the benchmarks for all combinations of the following parameters you can run the provided python script
