@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <any>
+#include <cmath>
 template<typename T>
 class TieredArray {
 public:
@@ -52,7 +54,7 @@ public:
             }
         }
         //        chunk with element
-        for (int k = tiers[chunkIndex].size() - 1; k >= position; k--) {
+        for (int k = tiers[chunkIndex].size() - 1; k >= position && k>=0; k--) {
             current = &(tiers[chunkIndex][k]);
             tiers[chunkIndex][k] = *next;
             next = current;
