@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{geometry}
+\graphicspath{ {./images/} }
+\title{Performance Oriented Computing - Sheet 12}
+\author{Tobias Beiser \and Johannes Karrer \and Andreas Kirchmair}
+
+\geometry{
+	top=2cm,
+	bottom=2.5cm,
+	left=3.0cm,
+	right=3.0cm,
+}
+
+
+\begin{document}
+	\maketitle
+	\section{Task 1: Setup and Basic Execution}
+	Goal of this task was to download and build lua and execute the `fib.lua` benchmark.
+	Steps:
+	\begin{itemize}
+		\item Get the latest lua version
+		\begin{minted}{bash}
+wget https://github.com/PeterTh/perf-oriented-dev/blob/master/lua/fib.lua			
+		\end{minted}
+		\item Build lua using make.
+		\item Execute the benchmark.
+		\item Results:
+		\begin{minted}{bash}
+100 x fibonacci_naive(30)     time:  18.2945 s  --  832040
+10000000 x fibonacci_tail(30) time:  17.2246 s  --  832040
+25000000 x fibonacci_iter(30) time:  14.9098 s  --  832040		
+		\end{minted}
+	\end{itemize}
+	\section{Task 2: Profiling}
+	PASS
+	\section{Task 3: Code Understanding}
+	PASS
+	\section{Task 4: Optimization}
+	PASS
+\end{document}
