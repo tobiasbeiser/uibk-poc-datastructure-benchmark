@@ -8,9 +8,9 @@ Goal of this task was to download and build lua and execute the `fib.lua` benchm
 - Execute the benchmark
 
 ```bash
-100 x fibonacci_naive(30)     time:  18.2945 s  --  832040
-10000000 x fibonacci_tail(30) time:  17.2246 s  --  832040
-25000000 x fibonacci_iter(30) time:  14.9098 s  --  832040		
+100 x fibonacci_naive(30)     time:  12.4563 s  --  832040
+10000000 x fibonacci_tail(30) time:  12.6122 s  --  832040
+25000000 x fibonacci_iter(30) time:  10.8823 s  --  832040		
 ```
 
 
@@ -140,11 +140,11 @@ static int docall (lua_State *L, int narg, int nres) {
 
 We can see that the whole analysis and compilation process takes way less time than the execution of the actual function:
 ```bash
-Compile time: 0.000064 seconds
-100 x fibonacci_naive(30)     time:  18.2945 s  --  832040
-10000000 x fibonacci_tail(30) time:  17.2246 s  --  832040
-25000000 x fibonacci_iter(30) time:  14.9098 s  --  832040	
-Execution time: 50.428908 seconds
+Compile time: 0.000236 seconds
+100 x fibonacci_naive(30)     time:  12.4563 s  --  832040
+10000000 x fibonacci_tail(30) time:  12.6122 s  --  832040
+25000000 x fibonacci_iter(30) time:  10.8823 s  --  832040		
+Execution time: 35.950888 seconds
 ```
 ### LUA_USE_JUMPTABLE
 
@@ -156,17 +156,17 @@ The LUA_USE_JUMPTABLE option is a compilation flag used in the Lua interpreter t
 For execution time comparison, the lua interpreter is compiled twice. The results show that using a jumptable is slightly faster, but the difference is not very significant, at least for this benchmark.
 
 ```bash
-# LUA_USE_JUMPTABLE = flase
-100 x fibonacci_naive(30)     time:  18.2835 s  --  832040
-10000000 x fibonacci_tail(30) time:  17.2264 s  --  832040
-25000000 x fibonacci_iter(30) time:  14.9101 s  --  832040	
+# LUA_USE_JUMPTABLE = true
+100 x fibonacci_naive(30)     time:  12.4563 s  --  832040
+10000000 x fibonacci_tail(30) time:  12.6122 s  --  832040
+25000000 x fibonacci_iter(30) time:  10.8823 s  --  832040		
 ```
 
 ```bash
-# LUA_USE_JUMPTABLE = true
-100 x fibonacci_naive(30)     time:  18.0832 s  --  832040
-10000000 x fibonacci_tail(30) time:  17.0894 s  --  832040
-25000000 x fibonacci_iter(30) time:  14.8177 s  --  832040
+# LUA_USE_JUMPTABLE = false
+100 x fibonacci_naive(30)     time:  13.1320 s  --  832040
+10000000 x fibonacci_tail(30) time:  12.9157 s  --  832040
+25000000 x fibonacci_iter(30) time:  12.2033 s  --  832040
 ```
 
 ## D) Optimization
@@ -179,9 +179,9 @@ As seen in task B) the main goal is to decrease the runtime of `luaV_execute`, w
 
 |                 | Baseline | Jumptable | O3      | O3 + JT | inlining | inline + n=5000 | inline + reorder | inline + n=5000 + reorder |
 | --------------- | -------- | --------- | ------- | ------- | -------- | --------------- | ---------------- | ------------------------- |
-| fibonacci_naive | 12.4563  | 12.8738   | 13.7820 | 13.7769 | 11.5519  | 12.6538         | 12.4942          | 12.8798                   |
-| fibonacci_tail  | 12.6122  | 12.5915   | 12.6314 | 12.5204 | 12.5336  | 11.2528         | 10.9410          | 10.9821                   |
-| fibonacci_iter  | 10.8823  | 10.8881   | 12.1682 | 12.1839 | 10.7880  | 11.6832         | 11.3429          | 11.3013                   |
+| fibonacci_naive | 12.4563  | 13.1320   | 13.7820 | 13.7769 | 11.5519  | 12.6538         | 12.4942          | 12.8798                   |
+| fibonacci_tail  | 12.6122  | 12.9157   | 12.6314 | 12.5204 | 12.5336  | 11.2528         | 10.9410          | 10.9821                   |
+| fibonacci_iter  | 10.8823  | 12.2033   | 12.1682 | 12.1839 | 10.7880  | 11.6832         | 11.3429          | 11.3013                   |
 
 
 
