@@ -1,7 +1,10 @@
-# Sheet 12
+# Sheet 12 - 19.06.2024
 
-**Tobias Beiser** - **Andreas Kirchmair** - **Johannes Karrer**  
-**20.06.2024**
+| Team              |
+| ----------------- |
+| Tobias Beiser     |
+| Andreas Kirchmair |
+| Johannes Karrer   |
 
 ## A) Setup and Basic Execution
 Goal of this task was to download and build lua and execute the `fib.lua` benchmark.
@@ -32,9 +35,8 @@ MYLDFLAGS= -pg
 Simply run the `./lua "path/to/fib.lua"` command via sbatch to generate the `gmon.out` file.
 After that we can generate a report via `gprof ./lua gmon.out > analysis.txt`
 
-```
+``` txt
 Flat profile:
-
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls   s/call   s/call  name    
@@ -48,7 +50,8 @@ Each sample counts as 0.01 seconds.
   0.31     15.72     0.05 10000002     0.00     0.00  luaF_closeupval
   0.31     15.77     0.05 10000001     0.00     0.00  luaF_findupval
   ...
-  
+```
+``` txt
 granularity:
 index % time    self  children    called     name
 ...
