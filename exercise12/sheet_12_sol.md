@@ -78,7 +78,7 @@ Overhead  Command  Shared Object     Symbol
 
 ### Results
 
-Both profilers were able to identitfy the hotspots in the LUA interpreter. `luaV_execute` takes up most of the execution time and is responsibly for calling the `luaD_pretailcall` and `luaD_precall` functions, which are called the most as well as `luaH_getshortst`. Optimizing these functions for our `fib.lua` program will yield the greatest improvement.
+Both profilers were able to identitfy the hotspots in the LUA interpreter. `luaV_execute` takes up most of the execution time and, among other things, is responsible for calling the `luaD_pretailcall`, `luaD_precall` and `luaH_getshortst` functions, which are called very often. These functions don't run for a long time but we thought we can probably get some performance improvement by inlining them to decrease the overhead of the function calls. Interestingly enough, the program spends most of its time for `close_state`, which according to gprof happens spontaneously. The descendant which runs the longest is `GCTM`. From this we deduced that the biggest room for improvement lies within the functions responsible for the cleaning of memory/Garbage Collection.
 
 ## C) Code Understanding
 
@@ -196,6 +196,13 @@ As seen in task B) the main goal is to decrease the runtime of `luaV_execute`, w
   - `precallC`
   -  Also don't forget to add `-finline-functions` to your makefile. We can also increase the size of inlined functions with `-finline-limit=n`
 - reorder: Reordering the vmcases such that `OP_CALL` and `OP_TAILCALL` are at the beginning of the `vmdispatch` statement
+
+We also tried changing the behaviour of the Garbage Collection but couldn't notice any differences. We tried:
+- changing the parameters
+- changing the GC mode
+- disabling GC altogether
+
+Maybe changing the allocator would result in great performance increases but doing that seemed way too complex.
 
 ### Results
 
