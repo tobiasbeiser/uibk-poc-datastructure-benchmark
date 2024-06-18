@@ -1,5 +1,8 @@
 # Sheet 12
 
+**Tobias Beiser** - **Andreas Kirchmair** - **Johannes Karrer**  
+**20.06.2024**
+
 ## A) Setup and Basic Execution
 Goal of this task was to download and build lua and execute the `fib.lua` benchmark.
 - Get the latest lua version 
@@ -8,6 +11,7 @@ Goal of this task was to download and build lua and execute the `fib.lua` benchm
 - Execute the benchmark
 
 ```bash
+# Jumptables are enabled by default
 100 x fibonacci_naive(30)     time:  12.4563 s  --  832040
 10000000 x fibonacci_tail(30) time:  12.6122 s  --  832040
 25000000 x fibonacci_iter(30) time:  10.8823 s  --  832040		
@@ -44,6 +48,16 @@ Each sample counts as 0.01 seconds.
   0.31     15.72     0.05 10000002     0.00     0.00  luaF_closeupval
   0.31     15.77     0.05 10000001     0.00     0.00  luaF_findupval
   ...
+  
+granularity:
+index % time    self  children    called     name
+...
+                                                 <spontaneous>
+[3]     83.1    0.00   13.32                 close_state [3]
+                0.00   10.66       1/1           luaC_freeallobjects [4]
+                0.00    2.66       1/1           luaD_closeprotected [8]
+                0.00    0.00      35/20000430     luaM_free_ [24]
+...
 ```
 
 
@@ -173,20 +187,11 @@ For execution time comparison, the lua interpreter is compiled twice. The result
 
 All builds were compiled with `gcc 12.2.0`. When benchmarking it is important to remove the profiling flags from the compiler, as these tend to increase the runtime by alot. 
 
-As seen in task B) the main goal is to decrease the runtime of `luaV_execute`, which is the main loop of the LUA interpreter. We will start with simple compiler optimizations and see if we can gain any performance without manipulating the source code first. After that the main goal is to reduce the overhead of calling `luaD_pretailcall` and `luad_precall` by inlining them. It would also be ideal if we could make any optimizations to the main loop of `luaV_excute`.
+As seen in task B) the main goal is to decrease the runtime of `luaV_execute`, which is the main loop of the LUA interpreter. We will start with simple compiler optimizations and see if we can gain any performance without manipulating the source code first. After that the main goal is to reduce the overhead of calling `luaD_pretailcall` and `luad_precall` by inlining them. It would also be ideal if we could make any optimizations to the main loop of `luaV_excute` or to the allocation/GC functionality of the lua interpreter (`close_state`,`GCTM`).
+
+
 
 ### Experiments
-
-`MYCFLAGS= -finline-functions -finline-limit=1000 -DLUA_USE_JUMPTABLE=0`
-
-
-
-
-
-
-
-
-
 
 |           | Baseline | JT      | O3      | O3 + JT | O3 + JT + n=1k | inline  | inline  + JT | inline + n=5000 +JT | inline + reorder | inline + reorder +JT | inline + n=5000 + reorder | inline + n=5000 + reorder + JT |
 | --------- | -------- | ------- | ------- | ------- | -------------- | ------- | ------------ | ------------------- | ---------------- | -------------------- | ------------------------- | ------------------------------ |
@@ -197,16 +202,16 @@ As seen in task B) the main goal is to decrease the runtime of `luaV_execute`, w
 
 
 
-- Jumptable: Add `-DLUA_USE_JUMPTABLE=1` to `MYCFLAGS` in `src/Makefile`
-- O3: Replace O2 with O3 in `src/Makefile`
-- inline: replace `LUAI_FUNC` with `static inline` in the function signatures of `luaD_pretailcall`,`luaD_precall` to reduce the overhead of calling these functions. Move declaration and dependencies of those functions to the ldo.h file.
+- **Jumptable (JT)**: Add `-DLUA_USE_JUMPTABLE=1` to `MYCFLAGS` in `src/Makefile`
+- **O3**: Replace O2 with O3 in `src/Makefile`
+- **inline**: replace `LUAI_FUNC` with `static inline` in the function signatures of `luaD_pretailcall`,`luaD_precall` to reduce the overhead of calling these functions. Move declaration and dependencies of those functions to the ldo.h file.
   - `#include "lapi.h"`
   - `#include "lgc.h"`
   - `#define next_ci(L)  (L->ci->next ? L->ci->next : luaE_extendCI(L))`
   - `prepCallInfo`
   - `precallC`
   -  Also don't forget to add `-finline-functions` to your makefile. We can also increase the size of inlined functions with `-finline-limit=n`
-- reorder: Reordering the vmcases such that `OP_CALL` and `OP_TAILCALL` are at the beginning of the `vmdispatch` statement
+- **reorder**: Reordering the vmcases such that `OP_CALL` and `OP_TAILCALL` are at the beginning of the `vmdispatch` statement
 
 We also tried changing the behaviour of the Garbage Collection but couldn't notice any differences. We tried:
 - changing the parameters
@@ -216,10 +221,23 @@ We also tried changing the behaviour of the Garbage Collection but couldn't noti
 Maybe changing the allocator would result in great performance increases but doing that seemed way too complex.
 
 ### Results
+The easiest thing to improve perfomance was activating the LUA_USE_JUMPTABLE makro, which replaces the switch statement in the main loop with pre_computed gotos and are especially useful for the perfomance of `fib_iter`.
 
-The thing that definetly helped most was inlining the most called functions. Using O3 seemed to decrease performance, so the inlining of functions had to be enabled by setting the specific compiler flag manually. Also, reordering the vmcases had a noticable effect for `fibonacci_tail` and `fibonacci_iter`.   
-As for inlining, keeping the `-finline-limit` at it's default value (600) didn't inline the big functions as expected so we set it to 1000 which seemed to be the sweetspot, as larger numbers (5000) increased the runtime. Sadly the use of jumptables did not really do anything, and for later benchmarks it also seemed increase the runtime by a bit.
+Using O3 seemed to decrease performance as inlining performed by O3 is probably too aggressive and leads to more cache misses (just an assumption). Instead, manually hinting the compiler towards which functions to inline via the `inline` keyword and restructuring some source files helped the most. Since the default value of `-finline-limit` (600) was not enough to inline our desired functions, the limit had to be slightly increased. `-finline-limit=1000` seemed to be the sweetspot for us as larger values decreased perfomance.  
 
-Also as a sidenote: Using these optimizations on a local machine running WSL, the performance increase was much more noticable (~20%) compared to LCC3 where the improvements where mostly in the single digits. The main improvement on local hardware came from the use of O3.
+Also, reordering the vmcases had a noticable effect for `fibonacci_tail`.  
+
+While the overall runtime of `fib.lua` could be greatly improved by reducing the execution time of `close_state`/`GCTM`, the benchmark scores would not change, as these functions are called after the benchmarking, when the whole script finishes. 
+
+As a sidenote: Using these optimizations (especially O3) on a local machine running WSL, the performance increase was much more noticable (~20%) compared to LCC3 where the improvements where mostly in the single digits.
+
+The final compile flags for the best performing overall solution were 
+```Make
+MYCFLAGS= -DLUA_USE_JUMPTABLE=1  -finline-limit=1000 -finline-functions
+```
+
+### Visualization
 
 ![](benchmark_results.png)
+
+![](benchmark_results_percentages.png)
